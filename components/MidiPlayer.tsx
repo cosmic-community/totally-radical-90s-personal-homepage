@@ -98,7 +98,7 @@ export default function MidiPlayer() {
     const arrayBuffer = new ArrayBuffer(44 + length * 2)
     const view = new DataView(arrayBuffer)
     const channels = buffer.numberOfChannels
-    const sampleRate = buffer.sampleRate ?? 44100 // Ensure we have a number, default to 44100
+    const sampleRate = buffer.sampleRate || 44100 // Use || instead of ?? and provide default
 
     // WAV header
     const writeString = (offset: number, string: string) => {
