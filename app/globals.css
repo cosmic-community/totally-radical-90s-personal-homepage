@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 90s-style background patterns */
+@layer base {
+  body {
+    background-color: #008080;
+    background-image: 
+      radial-gradient(white 1px, transparent 1px),
+      linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.1) 50%, transparent 50%, transparent 75%, rgba(255, 255, 255, 0.1) 75%);
+    background-size: 20px 20px, 40px 40px;
+    font-family: 'Times New Roman', serif;
+  }
+}
+
+/* Custom 90s animations */
+@layer utilities {
+  .text-rainbow {
+    background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-slide 3s ease-in-out infinite;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+
+  .retro-border {
+    border: 3px solid;
+    border-image: linear-gradient(45deg, #ff10f0, #39ff14, #00bfff) 1;
+    background: linear-gradient(45deg, rgba(255, 16, 240, 0.1), rgba(57, 255, 20, 0.1), rgba(0, 191, 255, 0.1));
+  }
+
+  .table-90s {
+    border-collapse: separate;
+    border-spacing: 2px;
+    background: linear-gradient(45deg, #ff10f0, #39ff14);
+  }
+
+  .table-90s td {
+    background: #ffffff;
+    border: 2px outset #cccccc;
+    padding: 8px;
+  }
+
+  /* Scrolling marquee effect */
+  .marquee {
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .marquee span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 15s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translate3d(100%, 0, 0);
+    }
+    100% {
+      transform: translate3d(-100%, 0, 0);
+    }
+  }
+
+  @keyframes rainbow-slide {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Pixel art styling */
+  .pixel-art {
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: -o-crisp-edges;
+  }
+
+  /* 90s button styles */
+  .btn-90s {
+    background: linear-gradient(45deg, #ff10f0, #39ff14);
+    border: 3px outset #cccccc;
+    color: #000000;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 0px #ffffff;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+
+  .btn-90s:hover {
+    background: linear-gradient(45deg, #39ff14, #ff10f0);
+  }
+
+  .btn-90s:active {
+    border-style: inset;
+    transform: translateY(1px);
+  }
+}
