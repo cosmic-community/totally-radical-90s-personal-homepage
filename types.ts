@@ -36,6 +36,33 @@ interface Homepage extends CosmicObject {
   };
 }
 
+// MIDI Track type
+interface MidiTrack extends CosmicObject {
+  type: 'midi-music-library';
+  metadata: {
+    track_title?: string;
+    composer?: string;
+    midi_file?: {
+      url: string;
+    } | null;
+    genre?: {
+      key: string;
+      value: string;
+    };
+    tempo?: number;
+    duration?: string;
+    difficulty?: {
+      key: string;
+      value: string;
+    };
+    description?: string;
+    album_cover?: {
+      url: string;
+      imgix_url: string;
+    };
+  };
+}
+
 // Blog post type
 interface BlogPost extends CosmicObject {
   type: 'blog-posts';
@@ -101,6 +128,8 @@ type BlogMood = 'awesome' | 'radical' | 'tubular' | 'gnarly';
 type GalleryCategory = 'photos' | 'memorabilia' | 'screenshots' | 'clipart';
 type MusicGenre = 'grunge' | 'pop' | 'hiphop' | 'alternative' | 'dance';
 type MusicRating = '1' | '2' | '3' | '4' | '5';
+type MidiGenre = 'classical' | 'jazz' | 'rock' | 'electronic' | 'folk' | 'ambient' | 'game_music' | 'experimental';
+type MidiDifficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 
 // API response types
 interface CosmicResponse<T> {
@@ -140,6 +169,10 @@ function isGuestbookEntry(obj: CosmicObject): obj is GuestbookEntry {
   return obj.type === 'guestbook-entries';
 }
 
+function isMidiTrack(obj: CosmicObject): obj is MidiTrack {
+  return obj.type === 'midi-music-library';
+}
+
 export type {
   CosmicObject,
   Homepage,
@@ -147,12 +180,15 @@ export type {
   GalleryItem,
   MusicItem,
   GuestbookEntry,
+  MidiTrack,
   CosmicResponse,
   CreateGuestbookData,
   BlogMood,
   GalleryCategory,
   MusicGenre,
-  MusicRating
+  MusicRating,
+  MidiGenre,
+  MidiDifficulty
 };
 
 export {
@@ -160,5 +196,6 @@ export {
   isBlogPost,
   isGalleryItem,
   isMusicItem,
-  isGuestbookEntry
+  isGuestbookEntry,
+  isMidiTrack
 };
