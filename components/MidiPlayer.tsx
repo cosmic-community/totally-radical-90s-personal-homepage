@@ -64,7 +64,13 @@ export default function MidiPlayer() {
   // Generate a simple audio tone using Web Audio API
   const generateToneDataURL = () => {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      // Add proper type checking for Web Audio API
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
+      if (!AudioContextClass) {
+        throw new Error('Web Audio API not supported')
+      }
+      
+      const audioContext = new AudioContextClass()
       const sampleRate = audioContext.sampleRate
       const duration = 2 // 2 seconds
       const samples = sampleRate * duration
@@ -98,7 +104,8 @@ export default function MidiPlayer() {
     const arrayBuffer = new ArrayBuffer(44 + length * 2)
     const view = new DataView(arrayBuffer)
     const channels = buffer.numberOfChannels
-    const sampleRate = buffer.sampleRate || 44100 // Use || instead of ?? and provide default
+    // Fix: Provide a fallback for sampleRate if it's undefined
+    const sampleRate = buffer.sampleRate ?? 44100
 
     // WAV header
     const writeString = (offset: number, string: string) => {
