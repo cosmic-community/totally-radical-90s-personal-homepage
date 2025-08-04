@@ -33,6 +33,8 @@ export default function WeatherWidget({ className = '' }: WeatherWidgetProps) {
     { condition: 'Righteous Breeze', icon: '💨', temp: 70 }
   ]
 
+  const cities = ['Cyberspace', 'The Internet', 'Web City', 'Digital Town', 'Pixel Village']
+
   useEffect(() => {
     // Simulate loading weather data
     const loadWeather = () => {
@@ -40,11 +42,15 @@ export default function WeatherWidget({ className = '' }: WeatherWidgetProps) {
       
       setTimeout(() => {
         const randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)]
-        setWeather({
-          ...randomWeather,
-          temperature: randomWeather.temp + Math.floor(Math.random() * 10) - 5,
-          city: ['Cyberspace', 'The Internet', 'Web City', 'Digital Town', 'Pixel Village'][Math.floor(Math.random() * 5)]
-        })
+        const randomCity = cities[Math.floor(Math.random() * cities.length)]
+        
+        if (randomWeather && randomCity) {
+          setWeather({
+            ...randomWeather,
+            temperature: randomWeather.temp + Math.floor(Math.random() * 10) - 5,
+            city: randomCity
+          })
+        }
         setIsLoading(false)
       }, 1000)
     }
@@ -55,6 +61,23 @@ export default function WeatherWidget({ className = '' }: WeatherWidgetProps) {
     
     return () => clearInterval(interval)
   }, [])
+
+  const refreshWeather = () => {
+    setIsLoading(true)
+    setTimeout(() => {
+      const randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)]
+      const randomCity = cities[Math.floor(Math.random() * cities.length)]
+      
+      if (randomWeather && randomCity) {
+        setWeather({
+          ...randomWeather,
+          temperature: randomWeather.temp + Math.floor(Math.random() * 10) - 5,
+          city: randomCity
+        })
+      }
+      setIsLoading(false)
+    }, 500)
+  }
 
   if (isLoading) {
     return (
@@ -107,18 +130,7 @@ export default function WeatherWidget({ className = '' }: WeatherWidgetProps) {
           </div>
           
           <button
-            onClick={() => {
-              setIsLoading(true)
-              setTimeout(() => {
-                const randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)]
-                setWeather({
-                  ...randomWeather,
-                  temperature: randomWeather.temp + Math.floor(Math.random() * 10) - 5,
-                  city: ['Cyberspace', 'The Internet', 'Web City', 'Digital Town', 'Pixel Village'][Math.floor(Math.random() * 5)]
-                })
-                setIsLoading(false)
-              }, 500)
-            }}
+            onClick={refreshWeather}
             className="btn-90s px-2 py-1 text-xs mt-2"
           >
             🔄 Refresh

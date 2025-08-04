@@ -41,12 +41,21 @@ export default function VirtualPet({
       }))
 
       // Update mood based on stats
-      setMood(prevMood => {
+      setMood((prevMood: string) => {
         const avgStats = Object.values(stats).reduce((a, b) => a + b, 0) / 4
-        if (avgStats > 80) return moods[Math.floor(Math.random() * 4)] // Happy moods
-        if (avgStats > 50) return moods[0] // Neutral
-        if (avgStats > 20) return moods[4] // Sad
-        return moods[Math.floor(Math.random() * 2) + 5] // Sick moods
+        let newMood: string | undefined
+        
+        if (avgStats > 80) {
+          newMood = moods[Math.floor(Math.random() * 4)] // Happy moods
+        } else if (avgStats > 50) {
+          newMood = moods[0] // Neutral
+        } else if (avgStats > 20) {
+          newMood = moods[4] // Sad
+        } else {
+          newMood = moods[Math.floor(Math.random() * 2) + 5] // Sick moods
+        }
+        
+        return newMood || prevMood // Fallback to previous mood if undefined
       })
     }, 5000)
 

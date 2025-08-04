@@ -30,16 +30,22 @@ export default function MessageOfTheDay({ className = '' }: MessageOfTheDayProps
     const today = new Date()
     const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000)
     const todayMessageIndex = dayOfYear % messages.length
+    const todayMessage = messages[todayMessageIndex]
     
-    setCurrentMessage(messages[todayMessageIndex])
-    setMessageIndex(todayMessageIndex)
+    if (todayMessage) {
+      setCurrentMessage(todayMessage)
+      setMessageIndex(todayMessageIndex)
+    }
   }, [])
 
   useEffect(() => {
     // Cycle through messages every 10 seconds for extra fun
     const interval = setInterval(() => {
       setMessageIndex(prev => (prev + 1) % messages.length)
-      setCurrentMessage(messages[messageIndex])
+      const nextMessage = messages[messageIndex]
+      if (nextMessage) {
+        setCurrentMessage(nextMessage)
+      }
     }, 10000)
 
     return () => clearInterval(interval)
@@ -72,8 +78,11 @@ export default function MessageOfTheDay({ className = '' }: MessageOfTheDayProps
             <button
               onClick={() => {
                 const randomIndex = Math.floor(Math.random() * messages.length)
-                setMessageIndex(randomIndex)
-                setCurrentMessage(messages[randomIndex])
+                const randomMessage = messages[randomIndex]
+                if (randomMessage) {
+                  setMessageIndex(randomIndex)
+                  setCurrentMessage(randomMessage)
+                }
               }}
               className="btn-90s px-3 py-1 text-xs"
             >

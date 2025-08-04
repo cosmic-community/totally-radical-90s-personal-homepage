@@ -35,9 +35,10 @@ export default function MIDIJukebox({ className = '' }: MIDIJukeboxProps) {
 
     const interval = setInterval(() => {
       // Generate random visualizer pattern
-      const newPattern = Array.from({ length: 16 }, () => 
-        visualizerBars[Math.floor(Math.random() * visualizerBars.length)]
-      )
+      const newPattern = Array.from({ length: 16 }, () => {
+        const randomBar = visualizerBars[Math.floor(Math.random() * visualizerBars.length)]
+        return randomBar || '█' // Fallback to ensure string is never undefined
+      })
       setVisualizer(newPattern)
     }, 200)
 
@@ -61,7 +62,10 @@ export default function MIDIJukebox({ className = '' }: MIDIJukeboxProps) {
     
     const currentIndex = tracks.findIndex(t => t.id === currentTrack.id)
     const nextIndex = (currentIndex + 1) % tracks.length
-    playTrack(tracks[nextIndex])
+    const nextTrackToPlay = tracks[nextIndex]
+    if (nextTrackToPlay) {
+      playTrack(nextTrackToPlay)
+    }
   }
 
   const prevTrack = () => {
@@ -69,7 +73,10 @@ export default function MIDIJukebox({ className = '' }: MIDIJukeboxProps) {
     
     const currentIndex = tracks.findIndex(t => t.id === currentTrack.id)
     const prevIndex = currentIndex === 0 ? tracks.length - 1 : currentIndex - 1
-    playTrack(tracks[prevIndex])
+    const prevTrackToPlay = tracks[prevIndex]
+    if (prevTrackToPlay) {
+      playTrack(prevTrackToPlay)
+    }
   }
 
   return (

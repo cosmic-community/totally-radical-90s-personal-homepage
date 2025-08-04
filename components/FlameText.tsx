@@ -34,9 +34,10 @@ export default function FlameText({
   useEffect(() => {
     const updateFlames = () => {
       const flameCount = intensityLevels[intensity]
-      const newPattern = Array.from({ length: flameCount }, () => 
-        flames[Math.floor(Math.random() * flames.length)]
-      )
+      const newPattern = Array.from({ length: flameCount }, () => {
+        const randomFlame = flames[Math.floor(Math.random() * flames.length)]
+        return randomFlame || '🔥' // Fallback to ensure string is never undefined
+      })
       setFlamePattern(newPattern)
     }
 

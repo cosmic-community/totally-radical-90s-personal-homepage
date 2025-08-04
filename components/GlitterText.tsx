@@ -34,12 +34,15 @@ export default function GlitterText({
   useEffect(() => {
     const updateSparkles = () => {
       const sparkleCount = densityLevels[density]
-      const newSparkles = Array.from({ length: sparkleCount }, (_, index) => ({
-        id: Date.now() + index,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        char: sparkleChars[Math.floor(Math.random() * sparkleChars.length)]
-      }))
+      const newSparkles = Array.from({ length: sparkleCount }, (_, index) => {
+        const randomChar = sparkleChars[Math.floor(Math.random() * sparkleChars.length)]
+        return {
+          id: Date.now() + index,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          char: randomChar || '✨' // Fallback to ensure char is never undefined
+        }
+      })
       setSparkles(newSparkles)
     }
 
