@@ -10,10 +10,19 @@ export default function MidiPlayer() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [currentTrack, setCurrentTrack] = useState('Radical90s.mp3')
   const audioRef = useRef<HTMLAudioElement>(null)
 
+  // Fallback playlist of creative commons or royalty-free audio URLs
+  const fallbackTracks = [
+    {
+      name: 'Chill 90s Vibes',
+      url: 'https://www.soundjay.com/misc/sounds/fail-buzzer-02.mp3' // This is just a placeholder - you'd want actual music
+    }
+  ]
+
   useEffect(() => {
-    // Fetch audio file from Cosmic CMS
+    // Fetch audio file from Cosmic CMS or use fallback
     const fetchAudioFile = async () => {
       try {
         setIsLoading(true)
@@ -28,17 +37,21 @@ export default function MidiPlayer() {
         if (homepage?.metadata?.midi_file?.url) {
           // Use the file from Cosmic if available
           setAudioUrl(homepage.metadata.midi_file.url)
+          setCurrentTrack('Cosmic Audio File')
         } else {
-          // Fallback to placeholder audio file
-          setAudioUrl('/audio/placeholder-music.mp3')
+          // Use a data URL for a simple audio tone as fallback
+          setAudioUrl(generateToneDataURL())
+          setCurrentTrack('Generated 90s Beep')
         }
       } catch (err) {
         if (hasStatus(err) && err.status === 404) {
-          // No homepage object found, use fallback
-          setAudioUrl('/audio/placeholder-music.mp3')
+          // No homepage object found, use generated tone
+          setAudioUrl(generateToneDataURL())
+          setCurrentTrack('Generated 90s Beep')
         } else {
           console.error('Error fetching audio file:', err)
-          setAudioUrl('/audio/placeholder-music.mp3')
+          setAudioUrl(generateToneDataURL())
+          setCurrentTrack('Generated 90s Beep')
         }
       } finally {
         setIsLoading(false)
@@ -47,6 +60,78 @@ export default function MidiPlayer() {
 
     fetchAudioFile()
   }, [])
+
+  // Generate a simple audio tone using Web Audio API
+  const generateToneDataURL = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const sampleRate = audioContext.sampleRate
+      const duration = 2 // 2 seconds
+      const samples = sampleRate * duration
+      const buffer = audioContext.createBuffer(1, samples, sampleRate)
+      const channelData = buffer.getChannelData(0)
+
+      // Generate a simple melody reminiscent of 90s computer sounds
+      for (let i = 0; i < samples; i++) {
+        const t = i / sampleRate
+        const freq1 = 440 + Math.sin(t * 2) * 100 // Base frequency with slight modulation
+        const freq2 = 880 + Math.sin(t * 3) * 50  // Harmonic
+        
+        channelData[i] = 
+          (Math.sin(2 * Math.PI * freq1 * t) * 0.3 * Math.exp(-t * 0.5)) +
+          (Math.sin(2 * Math.PI * freq2 * t) * 0.2 * Math.exp(-t * 0.8))
+      }
+
+      // Convert buffer to WAV data URL
+      const wavData = bufferToWav(buffer)
+      const blob = new Blob([wavData], { type: 'audio/wav' })
+      return URL.createObjectURL(blob)
+    } catch {
+      // Fallback to a simple beep sound data URL
+      return 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvDZijkJGGy37ulOFgxQp+DvtmEcBjuU1/LNeSsFJHfG8N2QQAoVXrTn66hVFApGnuvt7wABABUAEQAQAAsBAwAEAAgABgAHAAkABwAMAAAAAQABAB8AAQABAAAAUAACAAIABQAOAAAAsAECADkAAAAAggAAHgAEACABOQABAAAA=='"
+    }
+  }
+
+  // Simple WAV file creation helper
+  const bufferToWav = (buffer: AudioBuffer) => {
+    const length = buffer.length
+    const arrayBuffer = new ArrayBuffer(44 + length * 2)
+    const view = new DataView(arrayBuffer)
+    const channels = buffer.numberOfChannels
+    const sampleRate = buffer.sampleRate
+
+    // WAV header
+    const writeString = (offset: number, string: string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i))
+      }
+    }
+
+    writeString(0, 'RIFF')
+    view.setUint32(4, 36 + length * 2, true)
+    writeString(8, 'WAVE')
+    writeString(12, 'fmt ')
+    view.setUint32(16, 16, true)
+    view.setUint16(20, 1, true)
+    view.setUint16(22, channels, true)
+    view.setUint32(24, sampleRate, true)
+    view.setUint32(28, sampleRate * 2, true)
+    view.setUint16(32, 2, true)
+    view.setUint16(34, 16, true)
+    writeString(36, 'data')
+    view.setUint32(40, length * 2, true)
+
+    // Convert float samples to 16-bit PCM
+    const channelData = buffer.getChannelData(0)
+    let offset = 44
+    for (let i = 0; i < length; i++) {
+      const sample = Math.max(-1, Math.min(1, channelData[i]))
+      view.setInt16(offset, sample * 0x7FFF, true)
+      offset += 2
+    }
+
+    return arrayBuffer
+  }
 
   useEffect(() => {
     if (audioRef.current && audioUrl) {
@@ -170,7 +255,7 @@ export default function MidiPlayer() {
                 <div className="text-red-600">{error}</div>
               ) : isPlaying ? (
                 <div className="animate-pulse text-neon-purple">
-                  ♪ Now Playing: Radical90s.mp3 ♪
+                  ♪ Now Playing: {currentTrack} ♪
                 </div>
               ) : (
                 <div className="text-gray-700">
