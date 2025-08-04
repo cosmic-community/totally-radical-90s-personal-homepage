@@ -1,11 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['cdn.cosmicjs.com', 'imgix.cosmicjs.com'],
+    domains: [
+      'cdn.cosmicjs.com', 
+      'imgix.cosmicjs.com',
+      'images.unsplash.com'
+    ],
   },
   experimental: {
-    typedRoutes: false, // Disable to prevent TypeScript route errors
+    typedRoutes: false,
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
