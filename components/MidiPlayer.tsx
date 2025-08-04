@@ -13,12 +13,15 @@ export default function MidiPlayer() {
   const [isLoading, setIsLoading] = useState(true)
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  // Fallback tracks with sample audio (you can replace these URLs with actual MIDI-converted audio)
-  const fallbackTracks = [
+  // Fallback tracks with proper MidiTrack structure
+  const fallbackTracks: MidiTrack[] = [
     {
       id: 'fallback-1',
       title: 'Für Elise - Beethoven',
       slug: 'fur-elise-beethoven',
+      type: 'midi-music-library',
+      created_at: new Date().toISOString(),
+      modified_at: new Date().toISOString(),
       metadata: {
         track_title: 'Für Elise',
         composer: 'Ludwig van Beethoven',
@@ -38,6 +41,9 @@ export default function MidiPlayer() {
       id: 'fallback-2',
       title: 'The Entertainer - Scott Joplin',
       slug: 'the-entertainer-scott-joplin',
+      type: 'midi-music-library',
+      created_at: new Date().toISOString(),
+      modified_at: new Date().toISOString(),
       metadata: {
         track_title: 'The Entertainer',
         composer: 'Scott Joplin',
@@ -57,6 +63,9 @@ export default function MidiPlayer() {
       id: 'fallback-3',
       title: 'Greensleeves - Traditional',
       slug: 'greensleeves-traditional',
+      type: 'midi-music-library',
+      created_at: new Date().toISOString(),
+      modified_at: new Date().toISOString(),
       metadata: {
         track_title: 'Greensleeves',
         composer: 'Traditional (Anonymous)',
@@ -82,13 +91,20 @@ export default function MidiPlayer() {
           .find({
             type: 'midi-music-library'
           })
-          .props(['id', 'title', 'slug', 'metadata'])
+          .props(['id', 'title', 'slug', 'metadata', 'type', 'created_at', 'modified_at'])
           .depth(1)
         
         const cosmicTracks = response.objects as MidiTrack[]
         
         if (cosmicTracks.length > 0) {
-          setTracks(cosmicTracks)
+          // Ensure all tracks have required properties
+          const validTracks: MidiTrack[] = cosmicTracks.map(track => ({
+            ...track,
+            type: 'midi-music-library',
+            created_at: track.created_at || new Date().toISOString(),
+            modified_at: track.modified_at || new Date().toISOString()
+          }))
+          setTracks(validTracks)
         } else {
           // Use fallback tracks if no tracks in Cosmic
           setTracks(fallbackTracks)
@@ -153,9 +169,12 @@ export default function MidiPlayer() {
         const t = i / sampleRate
         const noteIndex = Math.floor((t * 2) % frequencies.length)
         const freq = frequencies[noteIndex]
+        
+        // Fix: Ensure freq is defined with fallback
+        const safeFreq = freq ?? 440
         const envelope = Math.exp(-t * 0.3) // Gentle decay
         
-        channelData[i] = Math.sin(2 * Math.PI * freq * t) * 0.3 * envelope
+        channelData[i] = Math.sin(2 * Math.PI * safeFreq * t) * 0.3 * envelope
       }
 
       // Convert buffer to WAV data URL
@@ -202,7 +221,9 @@ export default function MidiPlayer() {
     let offset = 44
     for (let i = 0; i < length; i++) {
       const sample = Math.max(-1, Math.min(1, channelData[i]))
-      view.setInt16(offset, sample * 0x7FFF, true)
+      // Fix: Ensure sample is a valid number
+      const safeSample = isNaN(sample) ? 0 : sample
+      view.setInt16(offset, safeSample * 0x7FFF, true)
       offset += 2
     }
 
