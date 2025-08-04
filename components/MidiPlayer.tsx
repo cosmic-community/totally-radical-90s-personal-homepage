@@ -87,8 +87,8 @@ export default function MidiPlayer() {
       const blob = new Blob([wavData], { type: 'audio/wav' })
       return URL.createObjectURL(blob)
     } catch {
-      // Fallback to a simple beep sound data URL
-      return 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvDZijkJGGy37ulOFgxQp+DvtmEcBjuU1/LNeSsFJHfG8N2QQAoVXrTn66hVFApGnuvt7wABABUAEQAQAAsBAwAEAAgABgAHAAkABwAMAAAAAQABAB8AAQABAAAAUAACAAIABQAOAAAAsAECADkAAAAAggAAHgAEACABOQABAAAA=='"
+      // Fallback to a simple, short beep sound data URL
+      return 'data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ4AAAAAAAAAAAAAAA=='
     }
   }
 
