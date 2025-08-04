@@ -70,19 +70,19 @@ export default async function GallerySection() {
                 {itemsToShow.map((item, index) => {
                   const imageUrl = 'metadata' in item && item.metadata?.image?.imgix_url 
                     ? item.metadata.image.imgix_url 
-                    : 'image' in item ? item.image : '';
+                    : 'image' in item ? (item as any).image : '';
                   
                   const title = 'metadata' in item && item.metadata?.title 
                     ? item.metadata.title 
-                    : 'title' in item ? item.title : item.title;
+                    : 'title' in item ? (item as any).title : item.title;
                   
                   const description = 'metadata' in item && item.metadata?.description 
                     ? item.metadata.description 
-                    : 'description' in item ? item.description : '';
+                    : 'description' in item ? (item as any).description : '';
                   
                   const category = 'metadata' in item && item.metadata?.category 
                     ? item.metadata.category 
-                    : 'category' in item ? item.category : '';
+                    : 'category' in item ? (item as any).category : '';
                   
                   return (
                     <div key={item.id} className="border-4 border-neon-pink bg-neon-cyan p-3">

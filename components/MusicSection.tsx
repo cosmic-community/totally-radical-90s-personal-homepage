@@ -75,7 +75,7 @@ export default async function MusicSection() {
     }
   ];
   
-  const itemsToShow = musicItems.length > 0 ? musicItems : sampleMusic;
+  const itemsToShow = musicItems.length > 0 ? musicItems : sampleItems;
   
   return (
     <section className="mb-8">
@@ -91,31 +91,31 @@ export default async function MusicSection() {
                 {itemsToShow.map((item, index) => {
                   const albumCover = 'metadata' in item && item.metadata?.album_cover?.imgix_url 
                     ? item.metadata.album_cover.imgix_url 
-                    : 'album_cover' in item ? item.album_cover : '';
+                    : 'album_cover' in item ? (item as any).album_cover : '';
                   
                   const title = 'metadata' in item && item.metadata?.title 
                     ? item.metadata.title 
-                    : 'title' in item ? item.title : item.title;
+                    : 'title' in item ? (item as any).title : item.title;
                   
                   const artist = 'metadata' in item && item.metadata?.artist 
                     ? item.metadata.artist 
-                    : 'artist' in item ? item.artist : '';
+                    : 'artist' in item ? (item as any).artist : '';
                   
                   const genre = 'metadata' in item && item.metadata?.genre 
                     ? item.metadata.genre 
-                    : 'genre' in item ? item.genre : '';
+                    : 'genre' in item ? (item as any).genre : '';
                   
                   const rating = 'metadata' in item && item.metadata?.rating 
                     ? item.metadata.rating 
-                    : 'rating' in item ? item.rating : '';
+                    : 'rating' in item ? (item as any).rating : '';
                   
                   const releaseYear = 'metadata' in item && item.metadata?.release_year 
                     ? item.metadata.release_year 
-                    : 'release_year' in item ? item.release_year : null;
+                    : 'release_year' in item ? (item as any).release_year : null;
                   
                   const comments = 'metadata' in item && item.metadata?.comments 
                     ? item.metadata.comments 
-                    : 'comments' in item ? item.comments : '';
+                    : 'comments' in item ? (item as any).comments : '';
                   
                   return (
                     <div key={item.id} className="border-4 border-neon-orange bg-neon-pink p-3">

@@ -62,23 +62,23 @@ export default async function BlogSection() {
           {postsToShow.map((post, index) => {
             const featuredImage = 'metadata' in post && post.metadata?.featured_image?.imgix_url 
               ? post.metadata.featured_image.imgix_url 
-              : 'featured_image' in post ? post.featured_image : '';
+              : 'featured_image' in post ? (post as any).featured_image : '';
             
             const title = 'metadata' in post && post.metadata?.title 
               ? post.metadata.title 
-              : 'title' in post ? post.title : post.title;
+              : 'title' in post ? (post as any).title : post.title;
             
             const content = 'metadata' in post && post.metadata?.content 
               ? post.metadata.content 
-              : 'content' in post ? post.content : '';
+              : 'content' in post ? (post as any).content : '';
             
             const mood = 'metadata' in post && post.metadata?.mood 
               ? post.metadata.mood 
-              : 'mood' in post ? post.mood : '';
+              : 'mood' in post ? (post as any).mood : '';
             
             const postDate = 'metadata' in post && post.metadata?.post_date 
               ? post.metadata.post_date 
-              : 'post_date' in post ? post.post_date : '';
+              : 'post_date' in post ? (post as any).post_date : '';
             
             return (
               <div key={post.id} className="table-90s w-full">
@@ -118,7 +118,7 @@ export default async function BlogSection() {
                         
                         <div 
                           className="font-serif text-black leading-relaxed"
-                          dangerouslySetInnerHTML={{ __html: content }}
+                          dangerouslySetInnerHTML={{ __html: content || '' }}
                         />
                         
                         <div className="text-center mt-4">

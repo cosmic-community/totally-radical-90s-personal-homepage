@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json() as CreateGuestbookData;
     
     // Validate required fields
-    if (!body.visitorName?.trim() || !body.message?.trim()) {
+    if (!body.visitor_name?.trim() || !body.message?.trim()) {
       return NextResponse.json(
         { error: 'Name and message are required' },
         { status: 400 }
@@ -17,12 +17,12 @@ export async function POST(request: NextRequest) {
     // Create the guestbook entry
     const response = await cosmic.objects.insertOne({
       type: 'guestbook-entries',
-      title: `${body.visitorName.trim()} - ${new Date().toLocaleDateString()}`,
+      title: `${body.visitor_name.trim()} - ${new Date().toLocaleDateString()}`,
       metadata: {
-        visitor_name: body.visitorName.trim(),
+        visitor_name: body.visitor_name.trim(),
         message: body.message.trim(),
         email: body.email?.trim() || '',
-        homepage_url: body.homepageUrl?.trim() || '',
+        homepage_url: body.homepage_url?.trim() || '',
         location: body.location?.trim() || '',
         date_signed: new Date().toISOString().split('T')[0]
       }

@@ -89,7 +89,7 @@ export default async function GuestbookSection() {
                           )}
                         </div>
                         <div className="text-sm text-black bg-neon-pink px-2 py-1 border border-black">
-                          {new Date(dateSigned).toLocaleDateString()}
+                          {dateSigned ? new Date(dateSigned).toLocaleDateString() : 'Unknown date'}
                         </div>
                       </div>
                       
