@@ -14,6 +14,25 @@
   }
 }
 
+/* Keyframe animations defined at root level */
+@keyframes marquee {
+  0% {
+    transform: translate3d(100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@keyframes rainbow-slide {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 /* Custom 90s animations */
 @layer utilities {
   .text-rainbow {
@@ -87,24 +106,5 @@
   .btn-90s:active {
     border-style: inset;
     transform: translateY(1px);
-  }
-}
-
-/* Keyframe animations moved outside of @layer utilities */
-@keyframes marquee {
-  0% {
-    transform: translate3d(100%, 0, 0);
-  }
-  100% {
-    transform: translate3d(-100%, 0, 0);
-  }
-}
-
-@keyframes rainbow-slide {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
   }
 }
