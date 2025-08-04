@@ -7,14 +7,10 @@ import BlogSection from '@/components/BlogSection'
 import GuestbookSection from '@/components/GuestbookSection'
 import Footer from '@/components/Footer'
 import VisitorCounter from '@/components/VisitorCounter'
-import MidiPlayer from '@/components/MidiPlayer'
 
 export default function HomePage() {
   return (
     <div className="min-h-screen">
-      {/* MIDI Player - muted by default */}
-      <MidiPlayer />
-      
       {/* Header with animated logo */}
       <Header />
       
