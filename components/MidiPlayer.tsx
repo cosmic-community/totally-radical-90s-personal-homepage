@@ -6,15 +6,17 @@ import type { Homepage } from '@/types'
 
 export default function MidiPlayer() {
   const [isPlaying, setIsPlaying] = useState(false)
-  const [isMuted, setIsMuted] = useState(true)
-  const [midiUrl, setMidiUrl] = useState<string | null>(null)
+  const [isMuted, setIsMuted] = useState(false)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const audioRef = useRef<HTMLAudioElement>(null)
 
   useEffect(() => {
-    // Fetch MIDI file from Cosmic CMS
-    const fetchMidiFile = async () => {
+    // Fetch audio file from Cosmic CMS
+    const fetchAudioFile = async () => {
       try {
+        setIsLoading(true)
         const { object } = await cosmic.objects
           .findOne({
             type: 'homepage'
@@ -24,47 +26,89 @@ export default function MidiPlayer() {
         
         const homepage = object as Homepage
         if (homepage?.metadata?.midi_file?.url) {
-          setMidiUrl(homepage.metadata.midi_file.url)
+          // Use the file from Cosmic if available
+          setAudioUrl(homepage.metadata.midi_file.url)
         } else {
-          // Fallback to a placeholder audio file that actually works
-          setMidiUrl('/audio/placeholder-music.mp3')
+          // Fallback to placeholder audio file
+          setAudioUrl('/audio/placeholder-music.mp3')
         }
       } catch (err) {
         if (hasStatus(err) && err.status === 404) {
           // No homepage object found, use fallback
-          setMidiUrl('/audio/placeholder-music.mp3')
+          setAudioUrl('/audio/placeholder-music.mp3')
         } else {
-          console.error('Error fetching MIDI file:', err)
-          setError('Could not load music file')
+          console.error('Error fetching audio file:', err)
+          setAudioUrl('/audio/placeholder-music.mp3')
         }
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    fetchMidiFile()
+    fetchAudioFile()
   }, [])
 
   useEffect(() => {
-    if (audioRef.current && midiUrl) {
-      audioRef.current.loop = true
-      audioRef.current.volume = 0.3
-      audioRef.current.muted = isMuted
+    if (audioRef.current && audioUrl) {
+      const audio = audioRef.current
+      audio.loop = true
+      audio.volume = 0.3
+      audio.muted = isMuted
+      
+      // Add event listeners
+      const handleCanPlay = () => {
+        setError(null)
+      }
+      
+      const handleError = () => {
+        setError('Audio file could not be loaded')
+        setIsPlaying(false)
+      }
+      
+      const handleEnded = () => {
+        setIsPlaying(false)
+      }
+      
+      audio.addEventListener('canplay', handleCanPlay)
+      audio.addEventListener('error', handleError)
+      audio.addEventListener('ended', handleEnded)
+      
+      return () => {
+        audio.removeEventListener('canplay', handleCanPlay)
+        audio.removeEventListener('error', handleError)
+        audio.removeEventListener('ended', handleEnded)
+      }
     }
-  }, [midiUrl, isMuted])
+  }, [audioUrl, isMuted])
 
   const togglePlay = async () => {
-    if (!audioRef.current || !midiUrl) return
+    if (!audioRef.current || !audioUrl || isLoading) return
+
+    const audio = audioRef.current
 
     try {
       if (isPlaying) {
-        audioRef.current.pause()
+        audio.pause()
         setIsPlaying(false)
       } else {
-        await audioRef.current.play()
-        setIsPlaying(true)
+        // Reset error state when trying to play
+        setError(null)
+        
+        // Ensure audio is loaded
+        if (audio.readyState < 2) {
+          audio.load()
+        }
+        
+        const playPromise = audio.play()
+        
+        if (playPromise !== undefined) {
+          await playPromise
+          setIsPlaying(true)
+        }
       }
     } catch (err) {
       console.error('Error playing audio:', err)
-      setError('Could not play music - try clicking again!')
+      setError('Click play again to start the music!')
       setIsPlaying(false)
     }
   }
@@ -77,14 +121,16 @@ export default function MidiPlayer() {
     }
   }
 
-  if (error && !midiUrl) {
+  if (isLoading) {
     return (
       <div className="fixed top-4 left-4 z-50">
         <div className="table-90s">
           <div className="bg-gradient-90s p-1">
             <div className="bg-white p-3 border-2 border-black">
-              <div className="text-red-600 text-xs">
-                🎵 Music player unavailable
+              <div className="flex items-center gap-2">
+                <div className="text-neon-purple font-comic font-bold text-sm">
+                  🎵 Loading...
+                </div>
               </div>
             </div>
           </div>
@@ -104,15 +150,17 @@ export default function MidiPlayer() {
               </div>
               <button
                 onClick={togglePlay}
-                className="btn-90s px-2 py-1 text-xs"
-                disabled={!midiUrl}
+                className="btn-90s px-2 py-1 text-xs hover:bg-neon-green hover:text-black transition-colors"
+                disabled={!audioUrl || isLoading}
+                title={isPlaying ? 'Pause music' : 'Play music'}
               >
                 {isPlaying ? '⏸️' : '▶️'}
               </button>
               <button
                 onClick={toggleMute}
-                className="btn-90s px-2 py-1 text-xs"
-                disabled={!midiUrl}
+                className="btn-90s px-2 py-1 text-xs hover:bg-neon-pink hover:text-black transition-colors"
+                disabled={!audioUrl || isLoading}
+                title={isMuted ? 'Unmute' : 'Mute'}
               >
                 {isMuted ? '🔇' : '🔊'}
               </button>
@@ -121,28 +169,34 @@ export default function MidiPlayer() {
               {error ? (
                 <div className="text-red-600">{error}</div>
               ) : isPlaying ? (
-                <div className="animate-pulse">♪ Now Playing: Radical90s.mid ♪</div>
+                <div className="animate-pulse text-neon-purple">
+                  ♪ Now Playing: Radical90s.mp3 ♪
+                </div>
               ) : (
-                <div>♪ Click to play awesome 90s tunes! ♪</div>
+                <div className="text-gray-700">
+                  ♪ Click ▶️ to play awesome 90s tunes! ♪
+                </div>
               )}
             </div>
           </div>
         </div>
       </div>
       
-      {midiUrl && (
+      {audioUrl && (
         <audio
           ref={audioRef}
-          src={midiUrl}
+          src={audioUrl}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
-          onError={() => {
-            setError('Audio format not supported')
+          onError={(e) => {
+            console.error('Audio error:', e)
+            setError('Audio format not supported - try a different browser!')
             setIsPlaying(false)
           }}
           onLoadStart={() => setError(null)}
           muted={isMuted}
-          preload="none"
+          preload="metadata"
+          crossOrigin="anonymous"
         />
       )}
     </div>
