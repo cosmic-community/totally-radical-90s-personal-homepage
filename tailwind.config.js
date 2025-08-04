@@ -7,23 +7,23 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        'comic': ['Comic Sans MS', 'cursive'],
-        'serif': ['Times New Roman', 'serif'],
-      },
       colors: {
         'neon-pink': '#FF10F0',
-        'neon-cyan': '#10FFFF', 
+        'neon-cyan': '#10FFFF',
         'neon-green': '#10FF10',
         'neon-yellow': '#FFFF10',
         'neon-orange': '#FF8010',
         'neon-purple': '#8010FF',
         'neon-blue': '#1080FF',
       },
+      fontFamily: {
+        'comic': ['Comic Sans MS', 'cursive'],
+        'pixel': ['Courier New', 'monospace'],
+      },
       animation: {
         'marquee': 'marquee 15s linear infinite',
         'marquee-reverse': 'marquee-reverse 15s linear infinite',
-        'marquee-slow': 'marquee-slow 25s linear infinite',  
+        'marquee-slow': 'marquee-slow 25s linear infinite',
         'marquee-fast': 'marquee-fast 8s linear infinite',
         'blink': 'blink 1s infinite',
         'blink-slow': 'blink-slow 2s infinite',
