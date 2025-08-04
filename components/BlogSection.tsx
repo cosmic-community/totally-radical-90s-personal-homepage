@@ -26,11 +26,20 @@ function getMoodDisplay(mood: string): string {
   return moods[mood] || 'Cool!';
 }
 
+interface SamplePost {
+  id: string;
+  title: string;
+  content: string;
+  mood: string;
+  post_date: string;
+  featured_image: string;
+}
+
 export default async function BlogSection() {
   const blogPosts = await getBlogPosts();
   
   // Sample fallback data
-  const samplePosts = [
+  const samplePosts: SamplePost[] = [
     {
       id: 'sample-1',
       title: 'OMG! Just Got the New Tamagotchi!',
@@ -49,7 +58,7 @@ export default async function BlogSection() {
     }
   ];
   
-  const postsToShow = blogPosts.length > 0 ? blogPosts : samplePosts;
+  const postsToShow: (BlogPost | SamplePost)[] = blogPosts.length > 0 ? blogPosts : samplePosts;
   
   return (
     <section className="mb-8">
@@ -59,26 +68,26 @@ export default async function BlogSection() {
         </h2>
         
         <div className="space-y-6">
-          {postsToShow.map((post, index) => {
+          {postsToShow.map((post: BlogPost | SamplePost, index: number) => {
             const featuredImage = 'metadata' in post && post.metadata?.featured_image?.imgix_url 
               ? post.metadata.featured_image.imgix_url 
-              : 'featured_image' in post ? (post as any).featured_image : '';
+              : 'featured_image' in post ? (post as SamplePost).featured_image : '';
             
             const title = 'metadata' in post && post.metadata?.title 
               ? post.metadata.title 
-              : 'title' in post ? (post as any).title : post.title;
+              : 'title' in post ? (post as SamplePost).title : '';
             
             const content = 'metadata' in post && post.metadata?.content 
               ? post.metadata.content 
-              : 'content' in post ? (post as any).content : '';
+              : 'content' in post ? (post as SamplePost).content : '';
             
             const mood = 'metadata' in post && post.metadata?.mood 
               ? post.metadata.mood 
-              : 'mood' in post ? (post as any).mood : '';
+              : 'mood' in post ? (post as SamplePost).mood : '';
             
             const postDate = 'metadata' in post && post.metadata?.post_date 
               ? post.metadata.post_date 
-              : 'post_date' in post ? (post as any).post_date : '';
+              : 'post_date' in post ? (post as SamplePost).post_date : '';
             
             return (
               <div key={post.id} className="table-90s w-full">

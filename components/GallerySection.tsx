@@ -26,11 +26,19 @@ function getCategoryDisplay(category: string): string {
   return categories[category] || 'Uncategorized';
 }
 
+interface SampleItem {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+}
+
 export default async function GallerySection() {
   const galleryItems = await getGalleryItems();
   
   // Sample fallback data for empty gallery
-  const sampleItems = [
+  const sampleItems: SampleItem[] = [
     {
       id: 'sample-1',
       title: 'My Awesome Tamagotchi!',
@@ -54,7 +62,7 @@ export default async function GallerySection() {
     }
   ];
   
-  const itemsToShow = galleryItems.length > 0 ? galleryItems : sampleItems;
+  const itemsToShow: (GalleryItem | SampleItem)[] = galleryItems.length > 0 ? galleryItems : sampleItems;
   
   return (
     <section className="mb-8">
@@ -67,22 +75,22 @@ export default async function GallerySection() {
           <div className="bg-gradient-90s p-2">
             <div className="bg-white p-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {itemsToShow.map((item, index) => {
+                {itemsToShow.map((item: GalleryItem | SampleItem, index: number) => {
                   const imageUrl = 'metadata' in item && item.metadata?.image?.imgix_url 
                     ? item.metadata.image.imgix_url 
-                    : 'image' in item ? (item as any).image : '';
+                    : 'image' in item ? (item as SampleItem).image : '';
                   
                   const title = 'metadata' in item && item.metadata?.title 
                     ? item.metadata.title 
-                    : 'title' in item ? (item as any).title : item.title;
+                    : 'title' in item ? (item as SampleItem).title : '';
                   
                   const description = 'metadata' in item && item.metadata?.description 
                     ? item.metadata.description 
-                    : 'description' in item ? (item as any).description : '';
+                    : 'description' in item ? (item as SampleItem).description : '';
                   
                   const category = 'metadata' in item && item.metadata?.category 
                     ? item.metadata.category 
-                    : 'category' in item ? (item as any).category : '';
+                    : 'category' in item ? (item as SampleItem).category : '';
                   
                   return (
                     <div key={item.id} className="border-4 border-neon-pink bg-neon-cyan p-3">

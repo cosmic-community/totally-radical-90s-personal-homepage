@@ -38,11 +38,22 @@ function getGenreDisplay(genre: string): string {
   return genres[genre] || 'Other';
 }
 
+interface SampleMusic {
+  id: string;
+  title: string;
+  artist: string;
+  genre: string;
+  rating: string;
+  release_year: number;
+  comments: string;
+  album_cover: string;
+}
+
 export default async function MusicSection() {
   const musicItems = await getMusicItems();
   
   // Sample fallback data
-  const sampleMusic = [
+  const sampleMusic: SampleMusic[] = [
     {
       id: 'sample-1',
       title: 'Smells Like Teen Spirit',
@@ -75,7 +86,7 @@ export default async function MusicSection() {
     }
   ];
   
-  const itemsToShow = musicItems.length > 0 ? musicItems : sampleItems;
+  const itemsToShow: (MusicItem | SampleMusic)[] = musicItems.length > 0 ? musicItems : sampleMusic;
   
   return (
     <section className="mb-8">
@@ -88,34 +99,34 @@ export default async function MusicSection() {
           <div className="bg-gradient-rainbow p-2">
             <div className="bg-white p-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {itemsToShow.map((item, index) => {
+                {itemsToShow.map((item: MusicItem | SampleMusic, index: number) => {
                   const albumCover = 'metadata' in item && item.metadata?.album_cover?.imgix_url 
                     ? item.metadata.album_cover.imgix_url 
-                    : 'album_cover' in item ? (item as any).album_cover : '';
+                    : 'album_cover' in item ? (item as SampleMusic).album_cover : '';
                   
                   const title = 'metadata' in item && item.metadata?.title 
                     ? item.metadata.title 
-                    : 'title' in item ? (item as any).title : item.title;
+                    : 'title' in item ? (item as SampleMusic).title : '';
                   
                   const artist = 'metadata' in item && item.metadata?.artist 
                     ? item.metadata.artist 
-                    : 'artist' in item ? (item as any).artist : '';
+                    : 'artist' in item ? (item as SampleMusic).artist : '';
                   
                   const genre = 'metadata' in item && item.metadata?.genre 
                     ? item.metadata.genre 
-                    : 'genre' in item ? (item as any).genre : '';
+                    : 'genre' in item ? (item as SampleMusic).genre : '';
                   
                   const rating = 'metadata' in item && item.metadata?.rating 
                     ? item.metadata.rating 
-                    : 'rating' in item ? (item as any).rating : '';
+                    : 'rating' in item ? (item as SampleMusic).rating : '';
                   
                   const releaseYear = 'metadata' in item && item.metadata?.release_year 
                     ? item.metadata.release_year 
-                    : 'release_year' in item ? (item as any).release_year : null;
+                    : 'release_year' in item ? (item as SampleMusic).release_year : null;
                   
                   const comments = 'metadata' in item && item.metadata?.comments 
                     ? item.metadata.comments 
-                    : 'comments' in item ? (item as any).comments : '';
+                    : 'comments' in item ? (item as SampleMusic).comments : '';
                   
                   return (
                     <div key={item.id} className="border-4 border-neon-orange bg-neon-pink p-3">
